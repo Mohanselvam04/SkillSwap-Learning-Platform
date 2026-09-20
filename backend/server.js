@@ -1,60 +1,46 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2/promise"); // promise সাপোর্ট সহ mysql2
+const db = require("./db");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// createConnection-এর বদলে Connection Pool ব্যবহার করা হয়েছে
-const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "skillswap",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+console.log("SkillSwap Local JSON Database Ready!");
+
+app.get("/", (req, res) => {
+  res.json({ message: "SkillSwap API is running (Local Database Mode)" });
 });
 
-// সার্ভার কানেকশন টেস্ট
-db.getConnection()
-  .then(conn => {
-    console.log("MySQL Pool Connected!");
-    conn.release();
-  })
-  .catch(err => console.log("DB error:", err.message));
-
-app.get("/", (req, res) => res.json({ message: "SkillSwap API is running" }));
-
-// ১. সাইনআপ রাউট
-app.post("/api/signup", async (req, res) => {
+// 1. Signup Route
+app.post("/api/signup", (req, res) => {
   try {
     const { name, email, password, student_id, batch, phone, description } = req.body;
-    const [result] = await db.query(
-      `INSERT INTO users (name,email,password,student_id,batch,phone,description) VALUES (?,?,?,?,?,?,?)`,
-      [name, email, password, student_id, batch, phone, description]
-    );
-    res.json({ message: "Signup successful", userId: result.insertId });
+    
+    if (!name || !email || !password || !student_id || !batch || !phone) {
+      return res.status(400).json({ message: "Please fill in all required fields." });
+    }
+
+    const newUser = db.createUser({ name, email, password, student_id, batch, phone, description });
+    res.json({ message: "Signup successful", userId: newUser.id });
   } catch (err) {
-    res.status(400).json({ message: "Email already exists or invalid data" });
+    res.status(400).json({ message: err.message || "Email already exists or invalid data" });
   }
 });
 
-// ২. লগইন রাউট
-app.post("/api/login", async (req, res) => {
+// 2. Login Route
+app.post("/api/login", (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Provide email and password" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Provide email and password" });
+    }
 
-    const [rows] = await db.query(
-      "SELECT * FROM users WHERE email=? AND password=?",
-      [email, password]
-    );
+    const u = db.loginUser(email, password);
+    if (!u) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
-    if (!rows.length) return res.status(401).json({ message: "Invalid email or password" });
-
-    const u = rows[0];
     res.json({
       id: u.id,
       name: u.name,
@@ -65,34 +51,102 @@ app.post("/api/login", async (req, res) => {
       description: u.description
     });
   } catch (err) {
-    res.status(500).json({ message: "Database error" });
+    res.status(500).json({ message: "Server error during login" });
   }
 });
 
-// ৩. পোস্ট তৈরি রাউট
-app.post("/api/posts", async (req, res) => {
+// 3. Create Post Route
+app.post("/api/posts", (req, res) => {
   try {
-    const { user_id, teach_skill, learn_skill, description } = req.body;
-    const [result] = await db.query(
-      "INSERT INTO posts(user_id,teach_skill,learn_skill,description) VALUES(?,?,?,?)",
-      [user_id, teach_skill, learn_skill, description]
-    );
-    res.json({ message: "Skill posted", id: result.insertId });
+    const { user_id, teach_skill, learn_skill, description, video_url, document_url } = req.body;
+    if (!user_id || !teach_skill || !learn_skill) {
+      return res.status(400).json({ message: "Please provide user ID, skill to teach, and skill to learn." });
+    }
+
+    const newPost = db.createPost({ user_id, teach_skill, learn_skill, description, video_url, document_url });
+    res.json({ message: "Skill posted successfully", id: newPost.id });
   } catch (err) {
     res.status(400).json({ message: "Could not create post" });
   }
 });
 
-// ৪. পোস্ট লিস্ট ও সার্চ ডাটা রাউট
-app.get("/api/posts", async (req, res) => {
+// 4. Get Posts Route (with optional search and category filter)
+app.get("/api/posts", (req, res) => {
   try {
-    const sql = `SELECT p.*, u.name, u.student_id, u.batch, u.phone, u.description AS profile_description
-                 FROM posts p JOIN users u ON p.user_id=u.id ORDER BY p.id DESC`;
-    const [rows] = await db.query(sql);
-    res.json(rows);
+    const searchQuery = req.query.search || "";
+    const category = req.query.category || "all";
+    const posts = db.getPostsJoined(searchQuery, category);
+    res.json(posts);
   } catch (err) {
-    res.status(500).json({ message: "Database error" });
+    res.status(500).json({ message: "Server error fetching posts" });
   }
 });
 
-app.listen(5000, () => console.log("SkillSwap server running on port 5000"));
+
+// 5. Get All Registered Users Route (for Messaging contact list)
+app.get("/api/users", (req, res) => {
+  try {
+    const users = db.getAllUsers();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Server error fetching users" });
+  }
+});
+
+// 6. Send Message Route (Stores in raw format JSON in backend/data/messages.json)
+app.post("/api/messages", (req, res) => {
+  try {
+    const { sender_id, receiver_id, message } = req.body;
+    if (!sender_id || !receiver_id || !message) {
+      return res.status(400).json({ message: "Please provide sender_id, receiver_id, and message content." });
+    }
+
+    const newMsg = db.createMessage({ sender_id, receiver_id, message });
+    res.json({ message: "Message sent successfully", data: newMsg });
+  } catch (err) {
+    res.status(400).json({ message: err.message || "Could not send message" });
+  }
+});
+
+// 7. Get Thread Messages between two users
+app.get("/api/messages", (req, res) => {
+  try {
+    const { user1, user2 } = req.query;
+    if (!user1 || !user2) {
+      return res.status(400).json({ message: "Please specify user1 and user2 query parameters." });
+    }
+
+    const thread = db.getMessagesBetween(user1, user2);
+    res.json(thread);
+  } catch (err) {
+    res.status(500).json({ message: "Server error fetching messages" });
+  }
+});
+
+// 8. Get User Conversations List
+app.get("/api/messages/conversations/:userId", (req, res) => {
+  try {
+    const conversations = db.getUserConversations(req.params.userId);
+    res.json(conversations);
+  } catch (err) {
+    res.status(500).json({ message: "Server error fetching conversations" });
+  }
+});
+
+// 9. Raw JSON Storage Export Endpoint
+app.get("/api/messages/raw/:userId", (req, res) => {
+  try {
+    const userId = Number(req.params.userId);
+    const userMessages = db.messages.filter(
+      (m) => m.sender_id === userId || m.receiver_id === userId
+    );
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", `attachment; filename="messages_user_${userId}_raw.json"`);
+    res.send(JSON.stringify(userMessages, null, 2));
+  } catch (err) {
+    res.status(500).json({ message: "Server error exporting raw JSON messages" });
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`SkillSwap server running on port ${PORT}`));

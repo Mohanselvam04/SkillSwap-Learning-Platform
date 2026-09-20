@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "jessy pinkman",
+    "email": "jessy.j@university.edu",
+    "password": "password123",
+    "student_id": "CS-101",
+    "batch": "2024",
+    "phone": "9876543210",
+    "description": "CS Student testing SkillSwap"
+  },
+  {
+    "id": 2,
+    "name": "walter white",
+    "email": "walter.j@university.edu",
+    "password": "password123",
+    "student_id": "CS-101",
+    "batch": "2024",
+    "phone": "9876543210",
+    "description": "CS Student testing SkillSwap"
+  },
+  {
+    "id": 3,
+    "name": "john snow",
+    "email": "johnsnow@university.edu",
+    "password": "password123",
+    "student_id": "CS-2024-001",
+    "batch": "2024",
+    "phone": "+1 (555) 234-5678",
+    "description": "Computer Science major passionate about AI, React frontend development, and UX design."
+  },
+  {
+    "id": 4,
+    "name": "bettercall saul",
+    "email": "saul@university.edu",
+    "password": "password123",
+    "student_id": "SE-2023-042",
+    "batch": "2023",
+    "phone": "+1 (555) 876-5432",
+    "description": "Software Engineering senior focused on Data Structures, Python backend APIs, and SQL."
+  },
+  {
+    "id": 5,
+    "name": "Marcus Vance",
+    "email": "marcus@university.edu",
+    "password": "password123",
+    "student_id": "DS-2024-018",
+    "batch": "2024",
+    "phone": "+1 (555) 345-6789",
+    "description": "Data Science student looking to master Node.js while teaching Machine Learning basics."
+  },
+  {
+    "id": 6,
+    "name": "johnwick",
+    "email": "john@university.edu",
+    "password": "pass",
+    "student_id": "CS-999",
+    "batch": "2025",
+    "phone": "+1 999 888 7777",
+    "description": "Test user"
+  },
+  {
+    "id": 7,
+    "name": "Alex Johnson",
+    "email": "alex.j@university.edu",
+    "password": "password123",
+    "student_id": "CS-101",
+    "batch": "2024",
+    "phone": "9876543210",
+    "description": "CS Student testing SkillSwap"
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "sender_id": 1,
+    "receiver_id": 2,
+    "message": "Hi Sarah! I saw your post on Python & SQL databases. I can teach you React & UI design!",
+    "timestamp": "2026-09-19T10:15:00.000Z"
+  },
+  {
+    "id": 2,
+    "sender_id": 2,
+    "receiver_id": 1,
+    "message": "Hey Alex! That sounds awesome. When are you free for a study session?",
+    "timestamp": "2026-09-19T10:18:30.000Z"
+  },
+  {
+    "id": 3,
+    "sender_id": 3,
+    "receiver_id": 1,
+    "message": "Hey Alex, interested in Machine Learning basics? I saw you teach React.",
+    "timestamp": "2026-09-19T11:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "sender_id": 1,
+    "receiver_id": 2,
+    "message": "Hey Sarah! Excited to swap skills!",
+    "timestamp": "2026-09-19T10:26:42.415Z"
+  },
+  {
+    "id": 5,
+    "sender_id": 5,
+    "receiver_id": 1,
+    "message": "Hi Alex! I noticed you can teach DevOps and want to learn Python. Let us swap skills!",
+    "timestamp": "2026-09-19T10:39:22.684Z"
+  },
+  {
+    "id": 6,
+    "sender_id": 5,
+    "receiver_id": 2,
+    "message": "Hello Sarah! Would love to learn Python from you.",
+    "timestamp": "2026-09-19T10:40:46.158Z"
+  },
+  {
+    "id": 7,
+    "sender_id": 5,
+    "receiver_id": 3,
+    "message": "hii",
+    "timestamp": "2026-09-19T10:44:10.548Z"
+  }
+]

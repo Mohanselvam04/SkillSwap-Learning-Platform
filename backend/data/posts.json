@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "teach_skill": "React & Modern CSS UI",
+    "learn_skill": "Python & Data Structures",
+    "description": "I can guide you through building interactive Web UIs using React & Vite. Looking for help with LeetCode Python problems!",
+    "video_url": "https://www.youtube.com/embed/w7ejDZ8SWv8",
+    "document_url": "https://react.dev/learn"
+  },
+  {
+    "id": 2,
+    "user_id": 2,
+    "teach_skill": "Python & SQL Databases",
+    "learn_skill": "Figma UI/UX & Web Design",
+    "description": "Experienced in writing clean Python scripts and SQL database design. Want to learn modern UI layout design.",
+    "video_url": "https://www.youtube.com/embed/rfscVS0vtbw",
+    "document_url": "https://docs.python.org/3/tutorial/index.html"
+  },
+  {
+    "id": 3,
+    "user_id": 3,
+    "teach_skill": "Machine Learning Basics & pandas",
+    "learn_skill": "Node.js REST APIs",
+    "description": "Can teach data analysis with pandas/numpy and simple scikit-learn ML models. Need guidance building Express backends.",
+    "video_url": "https://www.youtube.com/embed/i_LwzRVP7bg",
+    "document_url": "https://pandas.pydata.org/docs/user_guide/index.html"
+  }
+]
